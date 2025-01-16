@@ -19,6 +19,7 @@
   <input hidden type="text" id="cdkInput111" placeholder="例如：1111,2222"  value="WOAIZUGUO520,CHANGJIA520">
   <textarea type="text" id="cdkInput" placeholder="例如：1111,2222" 
    value="
+   240WJDR666
    WJDR666、WJDRTB6666、WJDR888、DY2024、winter6666、666SNOW、888SNOW、WJ6666、WJDRtaptap、TILI520
    FH666 
    FH777 
@@ -30,9 +31,9 @@
    WZY777
    WZY888
  " 
-  style="min-width:300px;height:200px;"
+  style="min-width:  90%;;height:200px;"
   >
-
+  240WJDR666
   WJDR666、WJDRTB6666、WJDR888、DY2024、winter6666、666SNOW、888SNOW、WJ6666、WJDRtaptap、TILI520
   FH666 
   FH777 
@@ -46,8 +47,11 @@
 </textarea>
 
   
-   <br>
-  <button onclick="sendRequests()">领取礼包</button> 
+<br><br><br>
+   <center>
+    <button   style="font-size:30px" onclick="sendRequests()">领取礼包</button> 
+
+   </center>
   <!-- ps 请先点登录 -->
 
   <div class="results" id="results"></div>
@@ -172,7 +176,7 @@ sss2= sign ;
 
             var result = await response.json();
   result = result.msg || JSON.stringify(result) ;
-            resall  =    `<p>  账号 ${nicknamedic[fid]} ${fid}  领取 ${cdk}: ${(result)}</p>    `  +resall ;
+            resall  =    `<p>  账号 ${nicknamedic[fid]} (${fid})  领取 ${cdk}: ${(result)}</p>    `  +resall ;
             resultsContainer.innerHTML  = resall  ; 
           } catch (error) {
             resultsContainer.innerHTML += `<p>请求失败 for fid=${fid} and cdk=${cdk}: ${error}</p>`;
