@@ -9,7 +9,13 @@
   <video id="remoteVideo" autoplay playsinline width="320"></video>
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    const socket = io('http://153.3.173.183:23000');
+    // const socket = io('http://153.3.173.183:23000');
+
+    const socket = io('http://153.3.173.183:23000', {
+      transports: ['websocket', 'polling'], // 优先尝试 WebSocket
+      reconnection: true,
+      reconnectionAttempts: 5
+    });
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     });
