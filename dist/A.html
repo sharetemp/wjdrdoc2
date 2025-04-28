@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A 端 - WebRTC 流示例</title>
+</head>
+<body>
+  <h2>A 端：提供视频流</h2>
+  <video id="localVideo" autoplay muted playsinline width="320"></video>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://153.3.173.183:23000');
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+      .then(stream => {
+        document.getElementById('localVideo').srcObject = stream;
+        stream.getTracks().forEach(t => pc.addTrack(t, stream));
+      })
+      .catch(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 320; canvas.height = 240;
+        const ctx = canvas.getContext('2d');
+        const img1 = new Image(), img2 = new Image();
+        img1.src = 'frame1.jpg'; img2.src = 'frame2.jpg';
+        let toggle = false;
+        setInterval(() => {
+          ctx.drawImage(toggle ? img1 : img2, 0, 0);
+          toggle = !toggle;
+        }, 500);
+        const stream = canvas.captureStream(2);
+        document.getElementById('localVideo').srcObject = stream;
+        stream.getTracks().forEach(t => pc.addTrack(t, stream));
+      });
+
+    socket.on('connect', () => socket.emit('join', 'webrtc-room'));
+    socket.on('joined', remoteId => {
+      pc.createOffer().then(offer => {
+        pc.setLocalDescription(offer);
+        socket.emit('signal', { to: remoteId, data: { sdp: offer } });
+      });
+    });
+    socket.on('signal', ({ from, data }) => {
+      if (data.sdp) {
+        pc.setRemoteDescription(data.sdp);
+        if (data.sdp.type === 'offer') {
+          pc.createAnswer().then(answer => {
+            pc.setLocalDescription(answer);
+            socket.emit('signal', { to: from, data: { sdp: answer } });
+          });
+        }
+      } else if (data.candidate) {
+        pc.addIceCandidate(data.candidate);
+      }
+    });
+    pc.onicecandidate = e => {
+      if (e.candidate) socket.emit('signal', { to: null, data: { candidate: e.candidate } });
+    };
+  </script>
+</body>
+</html>
